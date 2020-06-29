@@ -1,0 +1,154 @@
+
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html id="htmlId">
+<head>
+  <title>Coverage Report :: UserServiceImpl</title>
+  <style type="text/css">
+    @import "../../.css/coverage.css";
+  </style>
+</head>
+
+<body>
+<div class="header"></div>
+
+<div class="content">
+<div class="breadCrumbs">
+    [ <a href="../../index.html">all classes</a> ]
+    [ <a href="../index.html">ua.dyominov.task_tracker.service</a> ]
+</div>
+
+<h1>Coverage Summary for Class: UserServiceImpl (ua.dyominov.task_tracker.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">UserServiceImpl</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/ 1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    87,5%
+  </span>
+  <span class="absValue">
+    (7/ 8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    89,5%
+  </span>
+  <span class="absValue">
+    (17/ 19)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<div class="sourceCode"><i>1</i>&nbsp;package ua.dyominov.task_tracker.service;
+<i>2</i>&nbsp;
+<i>3</i>&nbsp;import org.springframework.beans.BeanUtils;
+<i>4</i>&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+<i>5</i>&nbsp;import org.springframework.beans.factory.annotation.Value;
+<i>6</i>&nbsp;import org.springframework.data.domain.PageRequest;
+<i>7</i>&nbsp;import org.springframework.stereotype.Service;
+<i>8</i>&nbsp;import ua.dyominov.task_tracker.model.Task;
+<i>9</i>&nbsp;import ua.dyominov.task_tracker.model.User;
+<i>10</i>&nbsp;import ua.dyominov.task_tracker.repository.TaskRepository;
+<i>11</i>&nbsp;import ua.dyominov.task_tracker.repository.UserRepository;
+<i>12</i>&nbsp;
+<i>13</i>&nbsp;import java.util.List;
+<i>14</i>&nbsp;import java.util.Optional;
+<i>15</i>&nbsp;
+<i>16</i>&nbsp;
+<i>17</i>&nbsp;@Service
+<i>18</i>&nbsp;public class UserServiceImpl implements UserService {
+<i>19</i>&nbsp;
+<i>20</i>&nbsp;    private final Integer pageLimit;
+<i>21</i>&nbsp;    private final UserRepository userRepository;
+<i>22</i>&nbsp;    private final TaskRepository taskRepository;
+<i>23</i>&nbsp;
+<b class="fc"><i>24</i>&nbsp;    public UserServiceImpl(@Autowired UserRepository userRepository, @Autowired TaskRepository taskRepository, @Value(&quot;${app.pageLimit}&quot;) Integer pageLimit) {</b>
+<b class="fc"><i>25</i>&nbsp;        this.userRepository = userRepository;</b>
+<b class="fc"><i>26</i>&nbsp;        this.taskRepository = taskRepository;</b>
+<b class="fc"><i>27</i>&nbsp;        this.pageLimit = pageLimit;</b>
+<b class="fc"><i>28</i>&nbsp;    }</b>
+<i>29</i>&nbsp;
+<i>30</i>&nbsp;    @Override
+<i>31</i>&nbsp;    public User create(User user) {
+<b class="fc"><i>32</i>&nbsp;        return userRepository.save(user);</b>
+<i>33</i>&nbsp;    }
+<i>34</i>&nbsp;
+<i>35</i>&nbsp;    @Override
+<i>36</i>&nbsp;    public void remove(Integer id) {
+<b class="fc"><i>37</i>&nbsp;        User user = userRepository.findById(id).get();</b>
+<b class="fc"><i>38</i>&nbsp;        userRepository.delete(user);</b>
+<b class="fc"><i>39</i>&nbsp;    }</b>
+<i>40</i>&nbsp;
+<i>41</i>&nbsp;    @Override
+<i>42</i>&nbsp;    public User update(User user) {
+<b class="fc"><i>43</i>&nbsp;        Optional&lt;User&gt; option = userRepository.findById(user.getId());</b>
+<b class="fc"><i>44</i>&nbsp;        if (option.isEmpty()) {</b>
+<b class="nc"><i>45</i>&nbsp;            return userRepository.save(user);</b>
+<i>46</i>&nbsp;        }
+<b class="fc"><i>47</i>&nbsp;        User old = option.get();</b>
+<b class="fc"><i>48</i>&nbsp;        BeanUtils.copyProperties(user, old, &quot;id&quot;);</b>
+<b class="fc"><i>49</i>&nbsp;        return userRepository.save(old);</b>
+<i>50</i>&nbsp;    }
+<i>51</i>&nbsp;
+<i>52</i>&nbsp;    @Override
+<i>53</i>&nbsp;    public List&lt;Task&gt; getTasks(Integer id) {
+<b class="fc"><i>54</i>&nbsp;        return taskRepository.findAllByUserId(id);</b>
+<i>55</i>&nbsp;    }
+<i>56</i>&nbsp;
+<i>57</i>&nbsp;    @Override
+<i>58</i>&nbsp;    public User getUser(Integer id) {
+<b class="fc"><i>59</i>&nbsp;        return userRepository.findById(id).get();</b>
+<i>60</i>&nbsp;    }
+<i>61</i>&nbsp;
+<i>62</i>&nbsp;    @Override
+<i>63</i>&nbsp;    public List&lt;User&gt; getAll(int page) {
+<b class="fc"><i>64</i>&nbsp;        return userRepository.findAll(PageRequest.of(page, pageLimit)).getContent();</b>
+<i>65</i>&nbsp;    }
+<i>66</i>&nbsp;
+<i>67</i>&nbsp;    @Override
+<i>68</i>&nbsp;    public User findByUsername(String username) {
+<b class="nc"><i>69</i>&nbsp;        return userRepository.findByUserName(username);</b>
+<i>70</i>&nbsp;    }
+<i>71</i>&nbsp;}
+</div>
+</div>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2020-06-29 16:03</div>
+</div>
+</body>
+</html>
